@@ -7,6 +7,14 @@ function Dklab_Realplexor(fullUrl, namespace, viaDocumentWrite)
 
 	// Detect current page hostname.
 	var host = document.location.host;
+	// Validate realplexor URL.
+	if (!fullUrl.match(/^\w+:\/\/([^/]+)/)) {
+		throw 'Dklab_Realplexor constructor argument must be fully-qualified URL, ' + fullUrl + ' given.';
+	}
+	var mHost = RegExp.$1;
+	//allow access from one subdomain to another
+	if (host.slice(host.indexOf('.')+1)==mHost.slice(mHost.indexOf('.')+1))
+		host=host.slice(host.indexOf('.')+1);
 	
 	// Assign initial properties.
 	if (!this.constructor._registry) this.constructor._registry = {}; // all objects registry
@@ -29,12 +37,7 @@ function Dklab_Realplexor(fullUrl, namespace, viaDocumentWrite)
 	
 	// Register this object in the registry (for IFRAME onload callback).
 	this.constructor._registry[this._iframeId] = this;
-	
-	// Validate realplexor URL.
-	if (!fullUrl.match(/^\w+:\/\/([^/]+)/)) {
-		throw 'Dklab_Realplexor constructor argument must be fully-qualified URL, ' + fullUrl + ' given.';
-	}
-	var mHost = RegExp.$1;
+
 	if (mHost != host && mHost.lastIndexOf("." + host) != mHost.length - host.length - 1) {
 		throw 'Due to the standard XMLHttpRequest security policy, hostname in URL passed to Dklab_Realplexor (' + mHost + ') must be equals to the current host (' + host + ') or be its direct sub-domain.';
 	} 
